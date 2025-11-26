@@ -323,6 +323,7 @@ begin
 		and OBJECT_SCHEMA_NAME(idxs.object_id) != 'sys'
 		and idxs.is_disabled=0
 		and obj.type_desc != 'TF' /* Ignore table value functions */
+		and not exists (select * from sys.external_tables as et where et.object_id = obj.object_id) /* as added by alasdaircs to avoid external tables */
 		order by i.avg_fragmentation_in_percent desc, i.page_count desc
 				
 		-- mark indexes XML,spatial and columnstore not to run online update 
