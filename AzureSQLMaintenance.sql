@@ -60,13 +60,13 @@ begin
 	/*
 	Add your manual settings here
 	*/
-
+	
 	/* make sure parameters selected correctly */
 	set @operation = lower(@operation)
 	set @mode = lower(@mode)
 	set @debug = lower(@debug) 
 	
-	if @mode not in ('smart','dummy')
+	if @mode not in ('smart','dummy') or @mode is null
 		set @mode = 'smart'
 
 	---------------------------------------------
@@ -302,7 +302,7 @@ begin
 			,i.ghost_record_count
 			,i.forwarded_record_count
 			,null as OnlineOpIsNotSupported
-			,null as ObjectDoesNotSupportResumableOperation
+			,0 as ObjectDoesNotSupportResumableOperation
 			,cast(0 as bit) as SortInTempDB
 			,case when ps.data_space_id IS NULL then 0 else 1 end as IsPartitioned
 			,case when et.object_id is NULL then 0 else 1 end as IsExternalTable
