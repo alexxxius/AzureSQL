@@ -3,10 +3,11 @@
 /* For any issue or suggestion please email to: yocr@microsoft.com */
 /* 
 ***********************************************
-	Current Version Date: 2025-11-06
+	Current Version Date: 2026-03-22
 ***********************************************
 
 Change Log: 
+	2026-03-22 - Fix collation conflict if user database does not use the default collation (thanks to Naseem Abubaker, Sofia Silva and Sabrin Alsahsah for your help on this update) 
 	2025-11-04 - Add User Override options. (exclue or override the command or add extra command to maintenance operation) 
 	2024-09-23 - Avoid rebuil heaps on external tables as this is not needed and not possible.
 	2024-09-18 - Preserve xml compression in case this was used for the index.
@@ -286,9 +287,9 @@ begin
 		/* using inner join - this eliminates indexes that we cannot maintain such as indexes on functions */
 		select 
 			idxs.[object_id]
-			,ObjectSchema = OBJECT_SCHEMA_NAME(idxs.object_id)
-			,ObjectName = object_name(idxs.object_id) 
-			,IndexName = idxs.name
+			,ObjectSchema = OBJECT_SCHEMA_NAME(idxs.object_id) COLLATE database_default 
+			,ObjectName = object_name(idxs.object_id) COLLATE database_default 
+			,IndexName = idxs.name COLLATE database_default 
 			,idxs.type
 			,idxs.type_desc
 			,idxs.has_filter
@@ -562,11 +563,11 @@ begin
 		/*Gets Stats for database*/
 		raiserror('Get statistics information...',0,0) with nowait;
 		select 
-			ObjectSchema = OBJECT_SCHEMA_NAME(s.object_id)
-			,ObjectName = object_name(s.object_id) 
+			ObjectSchema = OBJECT_SCHEMA_NAME(s.object_id) COLLATE database_default 
+			,ObjectName = object_name(s.object_id) COLLATE database_default 
 			,s.object_id
 			,s.stats_id
-			,StatsName = s.name
+			,StatsName = s.name COLLATE database_default 
 			,sp.last_updated
 			,sp.rows
 			,sp.rows_sampled
